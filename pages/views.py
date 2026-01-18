@@ -4,7 +4,10 @@ from django.shortcuts import render
 
 
 def home(request):
-    return render(request, "home.html")
+    return render(request, "home.html", 
+                  {'title' : 'Welcome',
+                   'items' : ['Django', 'Python', 'HTML'],
+                   })
 
 def about(request):
     return render(request, "about.html")
