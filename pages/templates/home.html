@@ -6,15 +6,6 @@
     <title>Home</title>
 </head>
 <body>
-    <h1>Numbers</h1>
-    <ul>
-        {% for number in numbers %}
-            {% if number|divisibleby:2 %}
-                <li>{{ number }} - Even</li>
-            {% else %}
-                <li>{{ number }} - Odd</li>
-            {% endif %}
-        {% endfor %}
-    </ul>
+    <h1>Hello {{ username }}</h1>
 </body>
 </html>
