@@ -22,4 +22,4 @@ def user_profile(request, id):
     if user is None: 
         return render(request, 'not_found.html', {'id': id}) 
     
-    return render(request, 'profile.html', {'user_id':id})
+    return render(request, 'profile.html', {'user' : user, 'id' : id})
