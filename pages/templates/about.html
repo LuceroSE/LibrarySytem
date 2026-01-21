@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About</title>
-</head>
-<body>
-    <h1>About Us</h1>
-    <p>This is a simple Django application</p>
-    <a href="/">Back to Home</a>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}About Us{% endblock %}
+
+{% block content %}
+<h1>About Us</h1>
+<p>We are a company that does interesting things.</p>
+<p>Founded in 2024, we've been helping people ever since.</p>
+{% endblock %}
