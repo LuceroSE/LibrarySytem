@@ -4,8 +4,8 @@ from django.shortcuts import render
 
 
 def home(request):
-    numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    return render(request, "home.html", {'numbers': numbers})
+    username = request.GET.get('username', 'Guest')
+    return render(request, "home.html", {'username': username})
 
 def about(request):
     return render(request, "about.html")
