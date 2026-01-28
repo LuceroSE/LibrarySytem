@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Book
+from .models import Book, Author
 
 # Create your views here.
 
@@ -40,3 +40,8 @@ def book_search(request):
         books = Book.objects.none() # Get the 'q' parameter, default to empty string
     
     return render(request, 'book_search.html', {'books': books, 'query': query})
+
+def author_detail(request, author_id):
+    author = get_object_or_404(Author, id=author_id)
+    books = Book.objects.filter(author=author)
+    return render(request, 'author_detail.html', {'author':author, 'books':books})
