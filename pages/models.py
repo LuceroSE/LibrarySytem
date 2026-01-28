@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-class Author(model.Model):
+class Author(models.Model):
     name = models.CharField(max_length=100)
     birth_year = models.IntergerField()
     country = models.CharField(max_length=50)
