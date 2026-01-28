@@ -5,7 +5,11 @@
 <h1>All Books</h1>
 <ul>
     {% for book in books %}  <!--Loop over books. If the list is empty, run the empty block instead.”-->
-        <li>{{ book.title }} ({{ book.year_published }})</li>
+        <li>
+            <a href="/books/{{ book.id }}/">{{ book.title }}</a> 
+            ({{ book.year_published }})
+
+        </li>
     {% empty %}
         <li>No books found</li>
     {% endfor %}
