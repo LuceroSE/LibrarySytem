@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 class Author(models.Model):
     name = models.CharField(max_length=100)
-    birth_year = models.IntergerField()
+    birth_year = models.IntegerField()
     country = models.CharField(max_length=50)
 
 class Book(models.Model):
