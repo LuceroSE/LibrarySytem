@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>All Books</title>
+</head>
+<body>
+    <h1>All Books</h1>
+    <ul>
+        {% for book in books %}  <!--Loop over books. If the list is empty, run the empty block instead.”-->
+            <li>{{ book.title }} ({{ book.year_published }})</li>
+        {% empty %}
+            <li>No books found</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
