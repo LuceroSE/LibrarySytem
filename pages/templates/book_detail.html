@@ -6,5 +6,5 @@
     <p><strong>Year Published:</strong> {{ book.year_published }}</p>
     <p><strong>Author:</strong> {{ book.author.name }}</p>
     
-    <a href = '/books/'> ← Back to all books</a>
+    <a href = "{% url 'book_list' %}"> ← Back to all books</a>
 {% endblock %}
