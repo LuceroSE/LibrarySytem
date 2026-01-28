@@ -31,3 +31,12 @@ def book_list(request):
 def book_detail(request, book_id):
     book = get_object_or_404(Book, id=book_id) #keyword argument id
     return render(request, 'book_detail.html', {'book' : book})
+
+def book_search(request):
+    query = request.GET.get('q', '') # Get the 'q' parameter, default to empty string
+    if query:
+        books = Book.objects.filter(title__icontains=query)
+    else:
+        books = Book.objects.none() # Get the 'q' parameter, default to empty string
+    
+    return render(request, 'book_search.html', {'books': books, 'query': query})
