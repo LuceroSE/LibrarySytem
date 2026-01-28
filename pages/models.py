@@ -6,7 +6,13 @@ class Author(models.Model):
     birth_year = models.IntegerField()
     country = models.CharField(max_length=50)
 
+    def __str__(self):
+        return self.name
+
 class Book(models.Model):
     title = models.CharField(max_length=200)
     year_published = models.IntegerField()
     author = models.ForeignKey(Author, on_delete=models.CASCADE) # This creates the author_id foreign key column
+    
+    def __str__(self):
+        return self.title
