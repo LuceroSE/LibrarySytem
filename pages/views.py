@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from .models import Book
 
 # Create your views here.
 
@@ -22,3 +23,7 @@ def user_profile(request, id):
         return render(request, 'not_found.html', {'id': id}) 
     
     return render(request, 'profile.html', {'user' : user, 'id' : id})
+
+def book_list(request):
+    books = Book.objects.all() #SELECT * FROM pages_book;
+    return render(request, 'book_list.html', {'books', books})
