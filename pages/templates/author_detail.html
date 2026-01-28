@@ -1,0 +1,24 @@
+{% extends 'base.html'%}
+
+{% block title %} {{ author.name }} {% endblock %}
+
+{% block content %}
+    <h1>{{ author.name }}</h1>
+
+    <p><strong>Born:</strong> {{ author.birth_year }}</p>
+    <p><strong>Country:</strong> {{ author.country }}</p>
+
+    <h2>Books by {{ author.name }}</h2>
+    <ul>
+        {% for book in books %}
+            <li>
+                <a href="{% url 'book_detail' book.id %}">{{ book.title }}</a> 
+                ({{ book.year_published }})
+            </li>
+        {% empty %}
+            <li>No books found for this author.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'book_list' %}">← Back to all books</a>
+{% endblock %}
