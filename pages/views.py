@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Book, Author
 from .forms import BookForm
+from django.contrib.auth.forms import UserCreationForm
 
 # Create your views here.
 
@@ -61,3 +62,14 @@ def add_book(request):
     # we get to this return statement because the form is new (we just created it we are sending it back for our get response)
     # or because form was invalid and the responde is an invalid form (with fields filled in), user fills the fields and fixes the issues
     # after that another post request is created by them pressing the submit boton
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+    
+    return render(request, 'registration/register.html', {'form' : form})
