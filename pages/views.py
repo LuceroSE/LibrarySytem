@@ -52,11 +52,12 @@ def author_detail(request, author_id):
 #decorator and it returns our function and lets access to the add_book page only if the user is loggged in otherwise it defaults to 
 # LOGIN_URL = 'login' #setting for where to send users who try to access a page that requires login 
 def add_book(request):
-    
     if request.method == 'POST':
         form = BookForm(request.POST) #request.POST is a dictionary that store the fields as keys and the values inputted as values
         if form.is_valid():
-            form.save()
+            book = form.save(commit=False) #The @login_required decorator guarantees that request.user is a real User object (not AnonymousUser)
+            book.added_by = request.user
+            book.save()
             return redirect('book_list') #return to the url of book_list using the nickname of the path mapping
             #we need this return or otherwise we will stay in the same page and everything will be reloaded when we refresh and
             #the book will be resaved, creating duplicates. This is becuase the browser saves the last requests

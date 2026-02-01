@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from .models import Book
 from datetime import date
 
+
 class BookForm(ModelForm):
     class Meta:
         model = Book
