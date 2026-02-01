@@ -116,3 +116,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+ 
+LOGIN_REDIRECT_URL = 'book_list' #After a successful login, redirect to the URL named book_list
+LOGIN_URL = 'login' #setting for where to send users who try to access a page that requires login
+LOGOUT_REDIRECT_URL = 'book_list' #When a user visits /accounts/logout/, Django destroys their session and redirects them to the book list. 

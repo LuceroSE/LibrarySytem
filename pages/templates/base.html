@@ -4,13 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title%} My site {% endblock %}</title> <!--default value if child doesnt overwrite it is My site-->
+    <title>{% block title%} Library {% endblock %}</title> <!--default value if child doesnt overwrite it is My site-->
     <link rel="stylesheet" href = "{% static 'css/style.css' %}"> <!--is that the nickname for this url? css/style.css?-->
 </head>
 <body>
     <nav>
-        <a href="{% url 'home' %}">Home</a>
-        <a href="{% url 'about' %}">About</a>
+        <a href="{% url 'book_list' %}">Books</a>
+
+        {% if user.is_authenticated %}  <!--user is in the built in context (dictionary) that manages login, logout etc etc-->
+            <span>Hello, {{ user.username }}!</span>
+            <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit">Log Out</button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}">Log In</a>
+            <a href="{% url 'register' %}">Register</a>
+        {% endif %}
     </nav>
     <main>
         {% block content %}
