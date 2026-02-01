@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Book, Author
 from .forms import BookForm
 from django.contrib.auth.forms import UserCreationForm
-
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 
@@ -48,7 +48,11 @@ def author_detail(request, author_id):
     books = Book.objects.filter(author=author)
     return render(request, 'author_detail.html', {'author':author, 'books':books})
 
+@login_required # only return the add book (in a wrapper) html if user is logged in. login_required is a 
+#decorator and it returns our function and lets access to the add_book page only if the user is loggged in otherwise it defaults to 
+# LOGIN_URL = 'login' #setting for where to send users who try to access a page that requires login 
 def add_book(request):
+    
     if request.method == 'POST':
         form = BookForm(request.POST) #request.POST is a dictionary that store the fields as keys and the values inputted as values
         if form.is_valid():
