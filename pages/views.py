@@ -54,7 +54,7 @@ def add_book(request):
             form.save()
             return redirect('book_list') #return to the url of book_list using the nickname of the path mapping
             #we need this return or otherwise we will stay in the same page and everything will be reloaded when we refresh and
-            #the book will be resaved, creating duplicates
+            #the book will be resaved, creating duplicates. This is becuase the browser saves the last requests
     else:#if it is get, lets reply with the book form (inside this statement the form is empty)
         form = BookForm()
     return render(request, 'add_book.html', {'form' : form})

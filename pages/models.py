@@ -13,6 +13,7 @@ class Book(models.Model):
     title = models.CharField(max_length=200)
     year_published = models.IntegerField()
     author = models.ForeignKey(Author, on_delete=models.CASCADE) # This creates the author_id foreign key column
+    date_added = models.DateField(auto_now_add=True)
     
     def __str__(self):
         return self.title
