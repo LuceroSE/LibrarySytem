@@ -17,6 +17,9 @@
                 {% csrf_token %}
                 <button type="submit">Log Out</button>
             </form>
+            {% if user.is_staff %}                                     <!--Removing a link from the template does not secure the view. A user could still type-->        
+                <a href="{% url 'add_book' %}">Add a New Book</a>     <!--/books/add/ directly into their browser. Template checks control what users see; view -->
+            {% endif %}                                                 <!--checks control what users can do. You always need both — the view check is the real security, and the template check is a usability improvement.-->-->
         {% else %}
             <a href="{% url 'login' %}">Log In</a>
             <a href="{% url 'register' %}">Register</a>
