@@ -6,5 +6,18 @@
     <p><strong>Year Published:</strong> {{ book.year_published }}</p>
     <p><strong>Author:</strong> <a href="{% url 'author_detail' book.author.id %}">{{ book.author.name }}</a></p>
     
+    
+    {% if perms.pages.change_book %}
+        <a href="{% url 'edit_book' book.id %}">Edit</a>
+    {% endif %}
+
+    {% if perms.pages.delete_book %}
+        <form method="post" action="{% url 'delete_book' book.id %}">
+            {% csrf_token %}
+            <button type="submit">Delete</button>
+        </form>
+    {% endif %}
+    
+    
     <a href = "{% url 'book_list' %}"> ← Back to all books</a>
 {% endblock %}

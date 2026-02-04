@@ -34,7 +34,11 @@ def book_list(request):
 
 def book_detail(request, book_id):
     book = get_object_or_404(Book, id=book_id) #keyword argument id
-    return render(request, 'book_detail.html', {'book' : book})
+
+    can_edit = request.user.has.perm('pages.change_book')
+    can_delete = request.user.has.perm('pages.delete_book')
+
+    return render(request, 'book_detail.html', {'book' : book, 'can_edit': can_edit, 'can_delete' : can_delete}) #This passes the permission check results to the template so we can show or hide buttons accordingly.
 
 def book_search(request):
     query = request.GET.get('q', '') # Get the 'q' parameter, default to empty string
