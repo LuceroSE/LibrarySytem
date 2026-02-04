@@ -35,8 +35,8 @@ def book_list(request):
 def book_detail(request, book_id):
     book = get_object_or_404(Book, id=book_id) #keyword argument id
 
-    can_edit = request.user.has.perm('pages.change_book')
-    can_delete = request.user.has.perm('pages.delete_book')
+    can_edit = request.user.has_perm('pages.change_book')
+    can_delete = request.user.has_perm('pages.delete_book')
 
     return render(request, 'book_detail.html', {'book' : book, 'can_edit': can_edit, 'can_delete' : can_delete}) #This passes the permission check results to the template so we can show or hide buttons accordingly.
 
@@ -61,8 +61,8 @@ def is_staff(user):
 @login_required # only return the add book (in a wrapper) html if user is logged in. login_required is a 
 #decorator and it returns our function and lets access to the add_book page only if the user is loggged in otherwise it defaults to 
 # LOGIN_URL = 'login' #setting for where to send users who try to access a page that requires login 
-@permission_required('pages.add_book', raise_exception=True)  #checks whether the user has a specific permission, if a logged-in user lacks permission, a 403 makes more sense than sending them to a login page they don't need
-@user_passes_test(is_staff) #decorator to check if user passes this test of is staff, we can define here any condition we want noy only is_staff tho. redirection is to login page rn, a 403 makes more sense than sending them to a login page they don't need 
+@permission_required('pages.add_book', raise_exception=True)  #MODEL BASED checks whether the user has a specific permission, if a logged-in user lacks permission, a 403 makes more sense than sending them to a login page they don't need
+@user_passes_test(is_staff) # CONSTUM CONDITION decorator to check if user passes this test of is staff, we can define here any condition we want noy only is_staff tho. redirection is to login page rn, a 403 makes more sense than sending them to a login page they don't need 
 def add_book(request):
     
     if request.method == 'POST':
@@ -91,3 +91,48 @@ def register(request):
         form = UserCreationForm()
     
     return render(request, 'registration/register.html', {'form' : form})
+
+def user_can_modify_book(user, book):        
+    """Check if user can edit/delete this book. 
+    This keeps your authorization rules in one place. If the rules change 
+    (e.g., "moderators can edit but not delete"), you only update one function."""
+    if user.is_staff:
+        return True
+    if user.has_perm('pages.change_book'):
+        return True
+    if book.added_by == user:  #OBJECT LEVEL We're not asking "does this user have delete permission?" (model-level). We're asking "is this user the one who added this specific book?" (object-level).
+        return True
+    return False
+
+@login_required
+def delete_book(request, book_id):
+    book = get_object_or_404(Book, pk=book_id)
+    
+    if not user_can_modify_book(request.user, book):
+        return HttpResponseForbidden("You don't have permission to delete this book.")
+    
+    if request.method == "POST":
+        book.delete()
+        return redirect('book_list')
+
+    return render(request, 'confirm_delete.html', {'book':book})
+
+@login_required
+def edit_book(request, book_id):
+    # 1. Get the book (or 404 if it doesn't exist)
+    book = get_object_or_404(Book, pk=book_id)   #We fetch the book by its ID from the URL. If it doesn't exist, Django returns a 404 page automatically.
+
+    # 2. Check authorization
+    if not user_can_modify_book(request.user, book):
+        return HttpResponseForbidden("You don't have permission to edit this book.")
+
+    # 3. Handle GET and POST
+    if request.method == 'POST':
+        form = BookForm(request.POST, instance=book)  #When the user submits changes, we create the form with both request.POST (the submitted data) and instance=book (the book to update). The save() call updates the existing book rather than creating a new one.
+        if form.is_valid():
+            form.save()
+            return redirect('book_detail', book_id=book.id)
+    else:
+        form = BookForm(instance=book)  #When the user first visits the edit page, we create a form with instance=book. This pre-fills the form with the book's current title, year, and author.
+
+    return render(request, 'edit_book.html', {'form': form, 'book': book})

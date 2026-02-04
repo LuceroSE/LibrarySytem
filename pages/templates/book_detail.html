@@ -6,18 +6,16 @@
     <p><strong>Year Published:</strong> {{ book.year_published }}</p>
     <p><strong>Author:</strong> <a href="{% url 'author_detail' book.author.id %}">{{ book.author.name }}</a></p>
     
-    
-    {% if perms.pages.change_book %}
+    {% if book.added_by %}  <!--if the added_by part isnt null-->
+    <p class="meta">Added by {{ book.added_by.username }}</p>
+    {% endif %} 
+
+    {% if user.is_staff or book.added_by == user %}
+        <!--The edit and delete links only appear if the user has permission — but the views still enforce authorization independently.-->
         <a href="{% url 'edit_book' book.id %}">Edit</a>
+        <a href="{% url 'delete_book' book.id %}">Delete</a>
     {% endif %}
 
-    {% if perms.pages.delete_book %}
-        <form method="post" action="{% url 'delete_book' book.id %}">
-            {% csrf_token %}
-            <button type="submit">Delete</button>
-        </form>
-    {% endif %}
-    
     
     <a href = "{% url 'book_list' %}"> ← Back to all books</a>
 {% endblock %}
