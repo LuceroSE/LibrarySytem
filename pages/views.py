@@ -3,6 +3,8 @@ from .models import Book, Author
 from .forms import BookForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 
@@ -52,6 +54,8 @@ def author_detail(request, author_id):
 #decorator and it returns our function and lets access to the add_book page only if the user is loggged in otherwise it defaults to 
 # LOGIN_URL = 'login' #setting for where to send users who try to access a page that requires login 
 def add_book(request):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You don't have permission to add books")
     if request.method == 'POST':
         form = BookForm(request.POST) #request.POST is a dictionary that store the fields as keys and the values inputted as values
         if form.is_valid():
