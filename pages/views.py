@@ -54,14 +54,11 @@ def author_detail(request, author_id):
 def is_staff(user):
     return user.is_staff
 
-@user_passes_test(is_staff) #decorator to check if user passes this test of is staff
+@user_passes_test(is_staff) #decorator to check if user passes this test of is staff, we can define here any condition we want tho
 @login_required # only return the add book (in a wrapper) html if user is logged in. login_required is a 
 #decorator and it returns our function and lets access to the add_book page only if the user is loggged in otherwise it defaults to 
 # LOGIN_URL = 'login' #setting for where to send users who try to access a page that requires login 
 def add_book(request):
-
-    if not request.user.is_staff:  #do not allow access to this page is logged in user is not part from the staff
-        return HttpResponseForbidden("You don't have permission to add books")
     
     if request.method == 'POST':
         form = BookForm(request.POST) #request.POST is a dictionary that store the fields as keys and the values inputted as values
