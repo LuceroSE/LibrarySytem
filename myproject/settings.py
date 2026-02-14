@@ -1,3 +1,4 @@
+from datetime import timedelta
 """
 Django settings for myproject project.
 
@@ -38,7 +39,43 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'pages',                            #added app (common fuctionality) called pages here
+    #REST api apps
+    'rest_framework',
+    'drf_spectacular',
 ]
+
+'''adding the DRF (django rest framework) and spectacular configuration that automatically generates API configuration '''
+# settings.py
+
+REST_FRAMEWORK = {
+    # Use drf-spectacular for schema generation. Use drf-spectacular to generate API documentation.
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    #configuring the Jason WEB TOKEN 
+    #'DEFAULT_PERMISSION_CLASSES': [
+    #    'rest_framework.permissions.IsAuthenticated',
+
+    #],
+    #'DEFAULT_AUTHENTICATION_CLASSES': (
+    #    'rest_framework_simplejwt.authentication.JWTAuthentication',
+    #)
+}
+
+"""SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,  # Issue new refresh token when refreshing
+    'AUTH_HEADER_TYPES': ('Bearer',),  # Authorization: Bearer <token>
+}"""
+
+SPECTACULAR_SETTINGS = {
+    #What should the API docs page look like (title, description, version)
+    'TITLE': 'Bookshop API',
+    'DESCRIPTION': 'API for managing books and authors in our bookshop',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

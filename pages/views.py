@@ -5,6 +5,11 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 from django.http import HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
+
+from rest_framework import viewsets
+from .serializers import AuthorSerializer, BookSerializer
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
+
 # Create your views here.
 
 
@@ -136,3 +141,76 @@ def edit_book(request, book_id):
         form = BookForm(instance=book)  #When the user first visits the edit page, we create a form with instance=book. This pre-fills the form with the book's current title, year, and author.
 
     return render(request, 'edit_book.html', {'form': form, 'book': book})
+
+#-----------------------------------------------------------------------------
+# pages/views.py
+
+
+
+class AuthorViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for Author model.
+
+    Provides: list, create, retrieve, update, partial_update, destroy
+    """
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+
+@extend_schema_view(
+    list=extend_schema(
+        summary="List all books",
+        description="Returns a list of all books in the bookshop.",
+        parameters=[
+            OpenApiParameter(
+                name='title',
+                description='Filter books by title (case-insensitive)',
+                required=False,
+                type=str,
+            ),
+            OpenApiParameter(
+                name='author',
+                description='Filter books by author ID',
+                required=False,
+                type=int,
+            ),
+        ],
+    ),
+    create=extend_schema(
+        summary="Add a new book",
+        description="Adds a new book to the bookshop inventory.",
+    ),
+    retrieve=extend_schema(
+        summary="Get book details",
+        description="Returns the details of a single book by its ID.",
+    ),
+    update=extend_schema(
+        summary="Replace a book",
+        description="Completely replaces an existing book's data.",
+    ),
+    partial_update=extend_schema(
+        summary="Update book fields",
+        description="Updates specific fields of an existing book.",
+    ),
+    destroy=extend_schema(
+        summary="Remove a book",
+        description="Permanently removes a book from the inventory.",
+    ),
+)
+class BookViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for Book model.
+
+    Provides: list, create, retrieve, update, partial_update, destroy
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+    def get_queryset(self):
+        queryset = Book.objects.all()
+        title = self.request.query_params.get('title')
+        if title:
+            queryset = queryset.filter(title__icontains=title)
+        author_id = self.request.query_params.get('author')
+        if author_id:
+            queryset = queryset.filter(author_id=author_id)
+        return queryset

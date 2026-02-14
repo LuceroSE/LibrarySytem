@@ -1,5 +1,12 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import AuthorViewSet, BookViewSet
+
 from . import views
+
+router = DefaultRouter()
+router.register(r'authors', AuthorViewSet, basename='author')
+router.register(r'books', BookViewSet, basename='book')
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -12,5 +19,6 @@ urlpatterns = [
     path('authors/<int:author_id>/', views.author_detail, name='author_detail'),
     path('register/', views.register, name='register'),
     path('books/<int:book_id>/edit/', views.edit_book, name='edit_book'),
-    path('books/<int:book_id>/delete/', views.delete_book, name='delete_book')
+    path('books/<int:book_id>/delete/', views.delete_book, name='delete_book'),
+    path('api/', include(router.urls)),
 ]
