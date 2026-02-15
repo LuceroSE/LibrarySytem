@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Book, Author
+from .models import Book, Author, ReadingListItem
 from .forms import BookForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
@@ -7,8 +7,13 @@ from django.http import HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 
 from rest_framework import viewsets
-from .serializers import AuthorSerializer, BookSerializer
+from .serializers import AuthorSerializer, BookSerializer, CustomTokenObtainPairSerializer, ReadingListItemSerializer
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.decorators import action
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .permissions import IsOwnerOrAdmin
 
 # Create your views here.
 
@@ -143,7 +148,7 @@ def edit_book(request, book_id):
     return render(request, 'edit_book.html', {'form': form, 'book': book})
 
 #-----------------------------------------------------------------------------
-# pages/views.py
+# VIEWSETS
 
 
 
@@ -155,6 +160,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
     """
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]    #can this user use this endpoint? ONLY IF AUTHENTICATED - VIEW PERMISSIONS
 
 @extend_schema_view(
     list=extend_schema(
@@ -204,6 +210,7 @@ class BookViewSet(viewsets.ModelViewSet):
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]     #VIEW PERMISSIONS - VIEW PERMISSIONS
 
     def get_queryset(self):
         queryset = Book.objects.all()
@@ -214,3 +221,42 @@ class BookViewSet(viewsets.ModelViewSet):
         if author_id:
             queryset = queryset.filter(author_id=author_id)
         return queryset
+    
+    @action(detail=False, methods=['get'])
+    def my_info(self, request):
+        """Return info about the currently authenticated user. (This goes into the token that is then serialized by the serializer class below CustomTokenObtainPairView)"""
+        if request.user.is_authenticated:
+            return Response({
+                'user_id': request.user.id,
+                'username': request.user.username,
+                'email': request.user.email,
+            })
+        return Response({'detail': 'Not authenticated'}, status=401)
+
+'''You can add extra data to your tokens by 
+creating a custom serializer. Serializing the 
+extra custom data that we added to our token, 
+which is the username, user email, and if they 
+are software or not.'''
+class CustomTokenObtainPairView(TokenObtainPairView):   
+    serializer_class = CustomTokenObtainPairSerializer
+
+class ReadingListViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for user's personal reading list.
+
+    Users can only see and modify their own reading list items.
+    """
+    serializer_class = ReadingListItemSerializer
+    permission_classes = [IsAuthenticated, IsOwnerOrAdmin]  #Must be logged in, and must own the object (IsAuthenticated) VIEW PERMISSIONS IsOwnerOrAdmin (OBJECT PERMISSION)
+
+    def get_queryset(self):
+        """Admins see all items, regular users see only their own."""
+        if self.request.user.is_staff:
+            return ReadingListItem.objects.all()
+        #filter by user
+        return ReadingListItem.objects.filter(user=self.request.user)  #Users only see their own items in list views, we are overriding the parent method
+
+    def perform_create(self, serializer):
+        """Automatically set the user when creating a reading list item."""
+        serializer.save(user=self.request.user)

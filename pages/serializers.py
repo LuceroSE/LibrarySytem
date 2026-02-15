@@ -1,6 +1,7 @@
 # pages/serializers.py
 from rest_framework import serializers
-from .models import Author, Book
+from .models import Author, Book, ReadingListItem
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -41,3 +42,32 @@ class BookSerializer(serializers.ModelSerializer):
                     "Book cannot be published before the author was born"
                 )
         return data
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['username'] = user.username
+        token['email'] = user.email
+        token['is_staff'] = user.is_staff
+
+        return token
+    
+''''VALIDATIONS
+Form validation = frontend guard
+
+Serializer validation = API guard
+
+Model constraints = database guard
+'''
+
+class ReadingListItemSerializer(serializers.ModelSerializer):
+    book_title = serializers.CharField(source='book.title', read_only=True)
+
+    class Meta:
+        model = ReadingListItem
+        fields = ['id', 'book', 'book_title', 'added_at', 'notes', 'priority']
+        read_only_fields = ['id', 'added_at']

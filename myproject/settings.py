@@ -51,21 +51,25 @@ REST_FRAMEWORK = {
     # Use drf-spectacular for schema generation. Use drf-spectacular to generate API documentation.
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     #configuring the Jason WEB TOKEN 
-    #'DEFAULT_PERMISSION_CLASSES': [
-    #    'rest_framework.permissions.IsAuthenticated',
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
 
-    #],
-    #'DEFAULT_AUTHENTICATION_CLASSES': (
-    #    'rest_framework_simplejwt.authentication.JWTAuthentication',
-    #)
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
 }
 
-"""SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  # Shorter in production
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': True,  # Issue new refresh token when refreshing
-    'AUTH_HEADER_TYPES': ('Bearer',),  # Authorization: Bearer <token>
-}"""
+    'ROTATE_REFRESH_TOKENS': True,  # Issue new refresh token when refreshing, rotate refresh tokens (issue new refresh each time)
+    'BLACKLIST_AFTER_ROTATION': True,  # Invalidate old refresh tokens
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,  # Use a dedicated key in production
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+}
 
 SPECTACULAR_SETTINGS = {
     #What should the API docs page look like (title, description, version)
@@ -73,6 +77,18 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'API for managing books and authors in our bookshop',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+
+    # JWT configuration for Swagger
+    'SECURITY': [{'BearerAuth': []}],
+    'COMPONENTS': {
+        'securitySchemes': {
+            'BearerAuth': {
+                'type': 'http',
+                'scheme': 'bearer',
+                'bearerFormat': 'JWT',
+            }
+        }
+    },
 }
 
 
