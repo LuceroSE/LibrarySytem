@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     #REST api apps
     'rest_framework',
     'drf_spectacular',
+    'corsheaders',
 ]
 
 '''adding the DRF (django rest framework) and spectacular configuration that automatically generates API configuration '''
@@ -94,6 +95,8 @@ SPECTACULAR_SETTINGS = {
 
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # (2) add at the TOP of middleware
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -174,3 +177,7 @@ STATIC_URL = 'static/'
 LOGIN_REDIRECT_URL = 'book_list' #After a successful login, redirect to the URL named book_list
 LOGIN_URL = 'login' #setting for where to send users who try to access a page that requires login
 LOGOUT_REDIRECT_URL = 'book_list' #When a user visits /accounts/logout/, Django destroys their session and redirects them to the book list. 
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+]
